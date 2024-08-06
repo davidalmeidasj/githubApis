@@ -1,11 +1,13 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
+import dotenv from 'dotenv';
+import githubRoutes from './routes/githubRoutes.ts';
+
+dotenv.config();
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
-app.get('/api', (req: Request, res: Response) => {
-    res.send('Hello from the API!');
-});
+app.use('/api', githubRoutes);
 
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);

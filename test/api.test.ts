@@ -1,15 +1,45 @@
+import { mockUsersResponse, mockUserDetailsResponse, mockUserReposResponse } from './mockData.ts';
 import request from 'supertest';
-import express, { Request, Response } from 'express';
+import express from 'express';
+import dotenv from 'dotenv';
+import githubRoutes from '../src/routes/githubRoutes.ts';
+
+dotenv.config();
 
 const app = express();
-app.get('/api', (req: Request, res: Response) => {
-    res.send('Hello from the API!');
+app.use('/api', githubRoutes);
+
+process.env.GITHUB_TOKEN = 'your_github_token';
+
+jest.mock('../src/services/GitHubService.ts', () => {
+    return {
+        GitHubService: jest.fn().mockImplementation(() => {
+            return {
+                getUsers: jest.fn().mockResolvedValue(mockUsersResponse),
+                getUserDetails: jest.fn().mockResolvedValue(mockUserDetailsResponse),
+                getUserRepos: jest.fn().mockResolvedValue(mockUserReposResponse)
+            };
+        })
+    };
 });
 
-describe('GET /api', () => {
-    it('should return Hello from the API!', async () => {
-        const res = await request(app).get('/api');
-        expect(res.text).toBe('Hello from the API!');
+describe('GitHub API Endpoints', () => {
+    it('GET /api/users should return users', async () => {
+        const res = await request(app).get('/api/users?since=0');
         expect(res.status).toBe(200);
+        expect(res.body.users).toEqual(mockUsersResponse.users);
+        expect(res.body.next).toBe(mockUsersResponse.next);
+    });
+
+    it('GET /api/users/:username/details should return user details', async () => {
+        const res = await request(app).get('/api/users/mojombo/details');
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual(mockUserDetailsResponse);
+    });
+
+    it('GET /api/users/:username/repos should return user repositories', async () => {
+        const res = await request(app).get('/api/users/mojombo/repos');
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual(mockUserReposResponse);
     });
 });
