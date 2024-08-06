@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { GitHubService } from '../services/GitHubService.ts';
+import { GitHubService } from '../services/GitHubService';
 
 const router = Router();
 const githubService = new GitHubService();

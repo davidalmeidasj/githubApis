@@ -1,8 +1,8 @@
-import { mockUsersResponse, mockUserDetailsResponse, mockUserReposResponse } from './mockData.ts';
+import { mockUsersResponse, mockUserDetailsResponse, mockUserReposResponse } from './mockData';
 import request from 'supertest';
 import express from 'express';
 import dotenv from 'dotenv';
-import githubRoutes from '../src/routes/githubRoutes.ts';
+import githubRoutes from '../src/routes/githubRoutes';
 
 dotenv.config();
 
